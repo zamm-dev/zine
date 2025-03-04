@@ -4,6 +4,7 @@ import { withRetry } from "../retry"
 import { anthropicDefaultModelId, AnthropicModelId, anthropicModels, ApiHandlerOptions, ModelInfo } from "../../shared/api"
 import { ApiHandler } from "../index"
 import { ApiStream } from "../transform/stream"
+import { langwatchService } from "../../services/telemetry/LangWatchService"
 
 export class AnthropicHandler implements ApiHandler {
 	private options: ApiHandlerOptions
@@ -22,6 +23,9 @@ export class AnthropicHandler implements ApiHandler {
 		const model = this.getModel()
 		let stream: AnthropicStream<Anthropic.Beta.PromptCaching.Messages.RawPromptCachingBetaMessageStreamEvent>
 		const modelId = model.id
+
+		// Start LangWatch span for telemetry
+		const span = langwatchService.startLLMSpan("anthropic_api_call", modelId, systemPrompt, messages)
 		switch (modelId) {
 			// 'latest' alias does not support cache_control
 			case "claude-3-7-sonnet-20250219":
@@ -121,61 +125,91 @@ export class AnthropicHandler implements ApiHandler {
 			}
 		}
 
-		for await (const chunk of stream) {
-			switch (chunk.type) {
-				case "message_start":
-					// tells us cache reads/writes/input/output
-					const usage = chunk.message.usage
-					yield {
-						type: "usage",
-						inputTokens: usage.input_tokens || 0,
-						outputTokens: usage.output_tokens || 0,
-						cacheWriteTokens: usage.cache_creation_input_tokens || undefined,
-						cacheReadTokens: usage.cache_read_input_tokens || undefined,
-					}
-					break
-				case "message_delta":
-					// tells us stop_reason, stop_sequence, and output tokens along the way and at the end of the message
+		try {
+			// Collect the full output text for LangWatch
+			let outputText = ""
+			let totalInputTokens = 0
+			let totalOutputTokens = 0
 
-					yield {
-						type: "usage",
-						inputTokens: 0,
-						outputTokens: chunk.usage.output_tokens || 0,
-					}
-					break
-				case "message_stop":
-					// no usage data, just an indicator that the message is done
-					break
-				case "content_block_start":
-					switch (chunk.content_block.type) {
-						case "text":
-							// we may receive multiple text blocks, in which case just insert a line break between them
-							if (chunk.index > 0) {
+			for await (const chunk of stream) {
+				switch (chunk.type) {
+					case "message_start":
+						// tells us cache reads/writes/input/output
+						const usage = chunk.message.usage
+						totalInputTokens += usage.input_tokens || 0
+						totalOutputTokens += usage.output_tokens || 0
+						yield {
+							type: "usage",
+							inputTokens: usage.input_tokens || 0,
+							outputTokens: usage.output_tokens || 0,
+							cacheWriteTokens: usage.cache_creation_input_tokens || undefined,
+							cacheReadTokens: usage.cache_read_input_tokens || undefined,
+						}
+						break
+					case "message_delta":
+						// tells us stop_reason, stop_sequence, and output tokens along the way and at the end of the message
+						totalOutputTokens += chunk.usage.output_tokens || 0
+						yield {
+							type: "usage",
+							inputTokens: 0,
+							outputTokens: chunk.usage.output_tokens || 0,
+						}
+						break
+					case "message_stop":
+						// no usage data, just an indicator that the message is done
+						break
+					case "content_block_start":
+						switch (chunk.content_block.type) {
+							case "text":
+								// we may receive multiple text blocks, in which case just insert a line break between them
+								if (chunk.index > 0) {
+									outputText += "\n"
+									yield {
+										type: "text",
+										text: "\n",
+									}
+								}
+								outputText += chunk.content_block.text
 								yield {
 									type: "text",
-									text: "\n",
+									text: chunk.content_block.text,
 								}
-							}
-							yield {
-								type: "text",
-								text: chunk.content_block.text,
-							}
-							break
-					}
-					break
-				case "content_block_delta":
-					switch (chunk.delta.type) {
-						case "text_delta":
-							yield {
-								type: "text",
-								text: chunk.delta.text,
-							}
-							break
-					}
-					break
-				case "content_block_stop":
-					break
+								break
+						}
+						break
+					case "content_block_delta":
+						switch (chunk.delta.type) {
+							case "text_delta":
+								outputText += chunk.delta.text
+								yield {
+									type: "text",
+									text: chunk.delta.text,
+								}
+								break
+						}
+						break
+					case "content_block_stop":
+						break
+				}
 			}
+
+			// End the LangWatch span with the collected output
+			span.end({
+				output: {
+					type: "text",
+					value: outputText,
+				},
+				metrics: {
+					promptTokens: totalInputTokens,
+					completionTokens: totalOutputTokens,
+				},
+			})
+		} catch (error) {
+			// End the span with error information
+			span.end({
+				error: error instanceof Error ? error : new Error(String(error)),
+			})
+			throw error
 		}
 	}
 
