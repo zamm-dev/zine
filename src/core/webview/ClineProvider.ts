@@ -31,6 +31,7 @@ import { Cline } from "../Cline"
 import { openMention } from "../mentions"
 import { getNonce } from "./getNonce"
 import { getUri } from "./getUri"
+import { langwatchService } from "../../services/telemetry/LangWatchService"
 import { telemetryService } from "../../services/telemetry/TelemetryService"
 import { TelemetrySetting } from "../../shared/TelemetrySetting"
 
@@ -465,6 +466,8 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 
 						break
 					case "newTask":
+						langwatchService.startTrace()
+						this.outputChannel.appendLine("New task trace started")
 						// Code that should run in response to the hello message command
 						//vscode.window.showInformationMessage(message.text!)
 
@@ -595,6 +598,8 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 					// 	}
 					// 	break
 					case "askResponse":
+						langwatchService.startTrace()
+						this.outputChannel.appendLine("New askResponse trace started")
 						this.cline?.handleWebviewAskResponse(message.askResponse!, message.text, message.images)
 						break
 					case "clearTask":
