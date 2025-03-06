@@ -1,4 +1,4 @@
-import { LangWatch } from "langwatch"
+import { LangWatch, LangWatchTrace } from "langwatch"
 
 /**
  * Service for LangWatch telemetry integration.
@@ -7,6 +7,7 @@ import { LangWatch } from "langwatch"
 export class LangWatchService {
 	private static instance: LangWatchService
 	private langwatch: LangWatch
+	private currentTrace?: LangWatchTrace
 
 	private constructor() {
 		this.langwatch = new LangWatch()
@@ -21,9 +22,23 @@ export class LangWatchService {
 
 	/**
 	 * Get a trace instance for tracking LLM API calls.
+	 * Returns the current trace if it exists, otherwise creates a new trace.
 	 */
 	public getTrace() {
-		return this.langwatch.getTrace()
+		if (!this.currentTrace) {
+			this.currentTrace = this.langwatch.getTrace()
+		}
+		return this.currentTrace
+	}
+
+	/**
+	 * Start a new trace for tracking LLM API calls.
+	 * @param metadata Optional metadata to associate with the trace
+	 * @returns The newly created trace
+	 */
+	public startTrace(metadata?: Record<string, any>) {
+		this.currentTrace = this.langwatch.getTrace({ metadata })
+		return this.currentTrace
 	}
 
 	/**
