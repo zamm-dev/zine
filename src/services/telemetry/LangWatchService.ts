@@ -8,6 +8,7 @@ export class LangWatchService {
 	private static instance: LangWatchService
 	private langwatch: LangWatch
 	private currentTrace?: LangWatchTrace
+	private currentThreadId?: string
 
 	private constructor() {
 		this.langwatch = new LangWatch()
@@ -37,7 +38,14 @@ export class LangWatchService {
 	 * @returns The newly created trace
 	 */
 	public startTrace(metadata?: Record<string, any>) {
-		this.currentTrace = this.langwatch.getTrace({ metadata })
+		const traceMetadata = { ...metadata }
+
+		// Include thread ID in metadata if available
+		if (this.currentThreadId) {
+			traceMetadata.threadId = this.currentThreadId
+		}
+
+		this.currentTrace = this.langwatch.getTrace({ metadata: traceMetadata })
 		return this.currentTrace
 	}
 
@@ -67,6 +75,35 @@ export class LangWatchService {
 				type: "chat_messages",
 				value: formattedMessages,
 			},
+		})
+	}
+
+	/**
+	 * Generate a unique thread ID for a new conversation.
+	 * @returns A unique thread ID string
+	 */
+	private generateThreadId(): string {
+		const timestamp = Date.now()
+		const randomPart = Math.random().toString(36).substring(2, 10)
+		return `thread-${timestamp}-${randomPart}`
+	}
+
+	/**
+	 * Start a new conversation by creating a new thread and resetting the current trace.
+	 * All subsequent traces will be associated with this conversation thread.
+	 * @param metadata Optional metadata to associate with the new conversation
+	 * @returns The newly created trace for the conversation
+	 */
+	public startNewConversation(metadata?: Record<string, any>) {
+		// Generate a new thread ID for this conversation
+		this.currentThreadId = this.generateThreadId()
+
+		// Reset the current trace
+		this.currentTrace = undefined
+
+		// Create a new trace with conversation metadata
+		return this.startTrace({
+			...metadata,
 		})
 	}
 }
