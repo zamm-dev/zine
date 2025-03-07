@@ -466,7 +466,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 
 						break
 					case "newTask":
-						langwatchService.startTrace()
+						langwatchService.startNewConversation()
 						this.outputChannel.appendLine("New task trace started")
 						// Code that should run in response to the hello message command
 						//vscode.window.showInformationMessage(message.text!)
