@@ -7,3 +7,7 @@ The name is based on [the original ZAMM](https://en.wikipedia.org/wiki/Zen_and_t
 ## Development
 
 You will need to set `LANGWATCH_API_KEY` in your environment variables for [LangWatch telemetry](https://app.langwatch.ai) to work.
+
+## Licensing
+
+The original work is licensed under the Apache license in [`LICENSE.base-cline`](./LICENSE.base-cline). My modifications are licensed under the GPLv3 in [`LICENSE`](./LICENSE).
