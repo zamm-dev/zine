@@ -4,6 +4,7 @@ import { withRetry } from "../retry"
 import { anthropicDefaultModelId, AnthropicModelId, anthropicModels, ApiHandlerOptions, ModelInfo } from "../../shared/api"
 import { ApiHandler } from "../index"
 import { ApiStream } from "../transform/stream"
+import { langwatchService } from "../../services/telemetry/LangWatchService"
 
 export class AnthropicHandler implements ApiHandler {
 	private options: ApiHandlerOptions
@@ -26,6 +27,8 @@ export class AnthropicHandler implements ApiHandler {
 		let budget_tokens = this.options.thinkingBudgetTokens || 0
 		const reasoningOn = modelId.includes("3-7") && budget_tokens !== 0 ? true : false
 
+		// Start LangWatch span for telemetry
+		const span = langwatchService.startLLMSpan("anthropic_api_call", modelId, systemPrompt, messages)
 		switch (modelId) {
 			// 'latest' alias does not support cache_control
 			case "claude-3-7-sonnet-20250219":
@@ -128,11 +131,17 @@ export class AnthropicHandler implements ApiHandler {
 			}
 		}
 
+		// Collect the full output text for LangWatch
+		let outputText = ""
+		let totalInputTokens = 0
+		let totalOutputTokens = 0
 		for await (const chunk of stream) {
 			switch (chunk.type) {
 				case "message_start":
 					// tells us cache reads/writes/input/output
 					const usage = chunk.message.usage
+					totalInputTokens += usage.input_tokens || 0
+					totalOutputTokens += usage.output_tokens || 0
 					yield {
 						type: "usage",
 						inputTokens: usage.input_tokens || 0,
@@ -144,6 +153,7 @@ export class AnthropicHandler implements ApiHandler {
 				case "message_delta":
 					// tells us stop_reason, stop_sequence, and output tokens along the way and at the end of the message
 
+					totalOutputTokens += chunk.usage.output_tokens || 0
 					yield {
 						type: "usage",
 						inputTokens: 0,
@@ -156,6 +166,7 @@ export class AnthropicHandler implements ApiHandler {
 				case "content_block_start":
 					switch (chunk.content_block.type) {
 						case "thinking":
+							outputText += chunk.content_block.thinking || ""
 							yield {
 								type: "reasoning",
 								reasoning: chunk.content_block.thinking || "",
@@ -172,11 +183,13 @@ export class AnthropicHandler implements ApiHandler {
 						case "text":
 							// we may receive multiple text blocks, in which case just insert a line break between them
 							if (chunk.index > 0) {
+								outputText += "\n"
 								yield {
 									type: "text",
 									text: "\n",
 								}
 							}
+							outputText += chunk.content_block.text
 							yield {
 								type: "text",
 								text: chunk.content_block.text,
@@ -187,12 +200,14 @@ export class AnthropicHandler implements ApiHandler {
 				case "content_block_delta":
 					switch (chunk.delta.type) {
 						case "thinking_delta":
+							outputText += chunk.delta.thinking
 							yield {
 								type: "reasoning",
 								reasoning: chunk.delta.thinking,
 							}
 							break
 						case "text_delta":
+							outputText += chunk.delta.text
 							yield {
 								type: "text",
 								text: chunk.delta.text,
@@ -208,6 +223,18 @@ export class AnthropicHandler implements ApiHandler {
 					break
 			}
 		}
+
+		// End the LangWatch span with the collected output
+		span.end({
+			output: {
+				type: "text",
+				value: outputText,
+			},
+			metrics: {
+				promptTokens: totalInputTokens,
+				completionTokens: totalOutputTokens,
+			},
+		})
 	}
 
 	getModel(): { id: AnthropicModelId; info: ModelInfo } {
