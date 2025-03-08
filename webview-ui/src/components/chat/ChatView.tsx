@@ -793,16 +793,22 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					{telemetrySetting === "unset" && <TelemetryBanner />}
 
 					{showAnnouncement && <Announcement version={version} hideAnnouncement={hideAnnouncement} />}
-					<div style={{ padding: "0 20px", flexShrink: 0 }}>
-						<h2>ZAMM Cline Development</h2>
+					<ZineIntro>
+						<h2>Zine: ZAMM-flavored Cline</h2>
 						<p>
-							Thanks to Claude 3.7 Sonnet's agentic coding capabilities, I can handle complex software development
-							tasks step-by-step. With tools that let me create & edit files, explore complex projects, use the
-							browser, and execute terminal commands (after you grant permission), I can assist you in ways that go
-							beyond code completion or tech support. I can even use MCP to create new tools and extend my own
-							capabilities.
+							<em>Zen and the Automation of Metaprogramming for the Masses</em> is a{" "}
+							<a href="https://www.robinsloan.com/notes/home-cooked-app/">home-cooked</a> version of Cline that is
+							specifically tailored to what <a href="https://zamm.dev/">I, Amos,</a> want from an AI coding tool. If
+							you are not me, you may find that Zine isn't really for you, and that's okay.
 						</p>
-					</div>
+						<p>
+							The name is based on{" "}
+							<a href="https://en.wikipedia.org/wiki/Zen_and_the_Art_of_Motorcycle_Maintenance">
+								the original ZAMM
+							</a>
+							.
+						</p>
+					</ZineIntro>
 					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
 				</div>
 			)}
@@ -939,6 +945,16 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		</div>
 	)
 }
+
+const ZineIntro = styled.div`
+	padding: 0 20px;
+	flex-shrink: 0;
+	/* ZAMM-specific */
+	a {
+		text-decoration: underline;
+		text-decoration-style: dotted;
+	}
+`
 
 const ScrollToBottomButton = styled.div`
 	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 55%, transparent);
