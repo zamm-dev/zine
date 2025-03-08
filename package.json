@@ -262,6 +262,7 @@
 		"globby": "^14.0.2",
 		"ignore": "^7.0.3",
 		"isbinaryfile": "^5.0.2",
+		"langwatch": "^0.1.5",
 		"mammoth": "^1.8.0",
 		"monaco-vscode-textmate-theme-converter": "^0.1.7",
 		"openai": "^4.83.0",
