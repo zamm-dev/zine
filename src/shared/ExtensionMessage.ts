@@ -83,6 +83,7 @@ export interface ExtensionState {
 	customInstructions?: string
 	uriScheme?: string
 	currentTaskItem?: HistoryItem
+	currentTaskDirectory?: string
 	checkpointTrackerErrorMessage?: string
 	clineMessages: ClineMessage[]
 	taskHistory: HistoryItem[]
