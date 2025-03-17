@@ -6,6 +6,8 @@ The name is based on [the original ZAMM](https://en.wikipedia.org/wiki/Zen_and_t
 
 ## Development
 
+Run `npm run install:all` before doing "Run and Debug" in VSCode.
+
 You will need to set `LANGWATCH_API_KEY` in your environment variables for [LangWatch telemetry](https://app.langwatch.ai) to work.
 
 ## Licensing
