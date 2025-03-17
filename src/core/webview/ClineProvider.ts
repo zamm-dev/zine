@@ -1865,12 +1865,15 @@ Here is the project's README to help you get started:\n\n${mcpDetails.readmeCont
 			planActSeparateModelsSetting,
 		} = await this.getState()
 
+		// copied from ensureTaskDirectoryExists
+		const globalStoragePath = this.context.globalStorageUri.fsPath
 		return {
 			version: this.context.extension?.packageJSON?.version ?? "",
 			apiConfiguration,
 			customInstructions,
 			uriScheme: vscode.env.uriScheme,
 			currentTaskItem: this.cline?.taskId ? (taskHistory || []).find((item) => item.id === this.cline?.taskId) : undefined,
+			currentTaskDirectory: this.cline?.taskId && path.join(globalStoragePath, "tasks", this.cline?.taskId),
 			checkpointTrackerErrorMessage: this.cline?.checkpointTrackerErrorMessage,
 			clineMessages: this.cline?.clineMessages || [],
 			taskHistory: (taskHistory || [])
