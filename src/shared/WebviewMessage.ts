@@ -26,6 +26,7 @@ export interface WebviewMessage {
 		| "openInBrowser"
 		| "openFile"
 		| "openMention"
+		| "openDirectory"
 		| "cancelTask"
 		| "refreshOpenRouterModels"
 		| "refreshOpenAiModels"
@@ -86,6 +87,8 @@ export interface WebviewMessage {
 	customToken?: string
 	// For openInBrowser
 	url?: string
+	// For openDirectory
+	path?: string
 	planActSeparateModelsSetting?: boolean
 	telemetrySetting?: TelemetrySetting
 	customInstructionsSetting?: string

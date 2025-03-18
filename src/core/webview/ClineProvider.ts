@@ -678,6 +678,9 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 					case "openMention":
 						openMention(message.text)
 						break
+					case "openDirectory":
+						this.handleOpenDirectory(message.path)
+						break
 					case "checkpointDiff": {
 						if (message.number) {
 							await this.cline?.presentMultifileDiff(message.number, false)
@@ -2298,6 +2301,20 @@ Here is the project's README to help you get started:\n\n${mcpDetails.readmeCont
 				isImage: false,
 				url,
 			})
+		}
+	}
+
+	// Open directory in system's file explorer
+	private handleOpenDirectory(directoryPath?: string) {
+		if (!directoryPath) {
+			return
+		}
+
+		try {
+			vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(directoryPath))
+		} catch (error) {
+			console.error(`Error opening directory: ${directoryPath}`, error)
+			vscode.window.showErrorMessage(`Failed to open directory: ${error}`)
 		}
 	}
 

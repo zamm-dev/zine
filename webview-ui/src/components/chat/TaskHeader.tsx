@@ -469,7 +469,14 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										whiteSpace: "nowrap",
 										overflow: "hidden",
 										textOverflow: "ellipsis",
-									}}>
+										cursor: taskDirectory ? "pointer" : "default",
+									}}
+									onClick={() => {
+										if (taskDirectory) {
+											vscode.postMessage({ type: "openDirectory", path: taskDirectory })
+										}
+									}}
+									title={taskDirectory ? "Click to open in file explorer" : "Unknown directory"}>
 									<span style={{ opacity: 0.9 }}>{`${taskDirectory || "Unknown"}`}</span>
 								</div>
 							</div>
@@ -497,7 +504,14 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										whiteSpace: "nowrap",
 										overflow: "hidden",
 										textOverflow: "ellipsis",
-									}}>
+										cursor: shadowGitDirectory ? "pointer" : "default",
+									}}
+									onClick={() => {
+										if (shadowGitDirectory) {
+											vscode.postMessage({ type: "openDirectory", path: shadowGitDirectory })
+										}
+									}}
+									title={shadowGitDirectory ? "Click to open in file explorer" : "Unknown directory"}>
 									<span style={{ opacity: 0.9 }}>{`${shadowGitDirectory || "Unknown"}`}</span>
 								</div>
 							</div>
