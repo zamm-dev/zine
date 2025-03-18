@@ -12,6 +12,8 @@ import { normalizeApiConfiguration } from "../settings/ApiOptions"
 
 interface TaskHeaderProps {
 	task: ClineMessage
+	taskDirectory?: string
+	shadowGitDirectory?: string
 	tokensIn: number
 	tokensOut: number
 	doesModelSupportPromptCache: boolean
@@ -24,6 +26,8 @@ interface TaskHeaderProps {
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
 	task,
+	taskDirectory,
+	shadowGitDirectory,
 	tokensIn,
 	tokensOut,
 	doesModelSupportPromptCache,
@@ -441,6 +445,76 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										</span>
 									</div>
 								)}
+							<div
+								style={{
+									display: "flex",
+									flexDirection: windowWidth < 270 ? "column" : "row",
+									gap: "4px",
+								}}>
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "4px",
+										flexShrink: 0,
+									}}>
+									<span style={{ fontWeight: "bold" }}>Task Directory:</span>
+								</div>
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "3px",
+										flex: 1,
+										whiteSpace: "nowrap",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+										cursor: taskDirectory ? "pointer" : "default",
+									}}
+									onClick={() => {
+										if (taskDirectory) {
+											vscode.postMessage({ type: "openDirectory", path: taskDirectory })
+										}
+									}}
+									title={taskDirectory ? "Click to open in file explorer" : "Unknown directory"}>
+									<span style={{ opacity: 0.9 }}>{`${taskDirectory || "Unknown"}`}</span>
+								</div>
+							</div>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: windowWidth < 270 ? "column" : "row",
+									gap: "4px",
+								}}>
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "4px",
+										flexShrink: 0,
+									}}>
+									<span style={{ fontWeight: "bold" }}>Shadow Git Directory:</span>
+								</div>
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "3px",
+										flex: 1,
+										whiteSpace: "nowrap",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+										cursor: shadowGitDirectory ? "pointer" : "default",
+									}}
+									onClick={() => {
+										if (shadowGitDirectory) {
+											vscode.postMessage({ type: "openDirectory", path: shadowGitDirectory })
+										}
+									}}
+									title={shadowGitDirectory ? "Click to open in file explorer" : "Unknown directory"}>
+									<span style={{ opacity: 0.9 }}>{`${shadowGitDirectory || "Unknown"}`}</span>
+								</div>
+							</div>
 							{ContextWindowComponent}
 							{isCostAvailable && (
 								<div
