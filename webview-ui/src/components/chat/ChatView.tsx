@@ -42,6 +42,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		version,
 		clineMessages: messages,
 		currentTaskDirectory,
+		shadowGitDirectory,
 		taskHistory,
 		apiConfiguration,
 		telemetrySetting,
@@ -779,6 +780,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 				<TaskHeader
 					task={task}
 					taskDirectory={currentTaskDirectory ?? "N/A"}
+					shadowGitDirectory={shadowGitDirectory ?? "N/A"}
 					tokensIn={apiMetrics.totalTokensIn}
 					tokensOut={apiMetrics.totalTokensOut}
 					doesModelSupportPromptCache={selectedModelInfo.supportsPromptCache}

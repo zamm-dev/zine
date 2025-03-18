@@ -37,6 +37,7 @@ import { telemetryService } from "../../services/telemetry/TelemetryService"
 import { TelemetrySetting } from "../../shared/TelemetrySetting"
 import { cleanupLegacyCheckpoints } from "../../integrations/checkpoints/CheckpointMigration"
 import CheckpointTracker from "../../integrations/checkpoints/CheckpointTracker"
+import { getShadowGitPath, hashWorkingDir } from "../../integrations/checkpoints/CheckpointUtils"
 
 /*
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/main/default/weather-webview/src/providers/WeatherViewProvider.ts
@@ -1865,8 +1866,26 @@ Here is the project's README to help you get started:\n\n${mcpDetails.readmeCont
 			planActSeparateModelsSetting,
 		} = await this.getState()
 
-		// copied from ensureTaskDirectoryExists
+		// Determine shadow git directory path for checkpoints
 		const globalStoragePath = this.context.globalStorageUri.fsPath
+		let shadowGitDirectory: string | undefined = undefined
+
+		if (this.cline?.taskId) {
+			try {
+				// Get the current working directory
+				const cwd = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath).at(0)
+				if (cwd) {
+					// Hash the working directory path
+					const cwdHash = hashWorkingDir(cwd)
+					// Use the getShadowGitPath function directly
+					// Note: We don't await the function here because we don't want to create
+					// the directory, just get the path for display in the state
+					shadowGitDirectory = path.join(globalStoragePath, "checkpoints", cwdHash, ".git")
+				}
+			} catch (error) {
+				console.error("Failed to determine shadow git directory:", error)
+			}
+		}
 		return {
 			version: this.context.extension?.packageJSON?.version ?? "",
 			apiConfiguration,
@@ -1874,6 +1893,7 @@ Here is the project's README to help you get started:\n\n${mcpDetails.readmeCont
 			uriScheme: vscode.env.uriScheme,
 			currentTaskItem: this.cline?.taskId ? (taskHistory || []).find((item) => item.id === this.cline?.taskId) : undefined,
 			currentTaskDirectory: this.cline?.taskId && path.join(globalStoragePath, "tasks", this.cline?.taskId),
+			shadowGitDirectory,
 			checkpointTrackerErrorMessage: this.cline?.checkpointTrackerErrorMessage,
 			clineMessages: this.cline?.clineMessages || [],
 			taskHistory: (taskHistory || [])
