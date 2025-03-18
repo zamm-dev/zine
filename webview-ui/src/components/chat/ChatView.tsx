@@ -779,8 +779,8 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 			{task ? (
 				<TaskHeader
 					task={task}
-					taskDirectory={currentTaskDirectory ?? "N/A"}
-					shadowGitDirectory={shadowGitDirectory ?? "N/A"}
+					taskDirectory={currentTaskDirectory}
+					shadowGitDirectory={shadowGitDirectory}
 					tokensIn={apiMetrics.totalTokensIn}
 					tokensOut={apiMetrics.totalTokensOut}
 					doesModelSupportPromptCache={selectedModelInfo.supportsPromptCache}

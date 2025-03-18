@@ -12,8 +12,8 @@ import { normalizeApiConfiguration } from "../settings/ApiOptions"
 
 interface TaskHeaderProps {
 	task: ClineMessage
-	taskDirectory: string
-	shadowGitDirectory: string
+	taskDirectory?: string
+	shadowGitDirectory?: string
 	tokensIn: number
 	tokensOut: number
 	doesModelSupportPromptCache: boolean
@@ -445,66 +445,62 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										</span>
 									</div>
 								)}
-							{currentTaskItem?.id && (
+							<div
+								style={{
+									display: "flex",
+									flexDirection: windowWidth < 270 ? "column" : "row",
+									gap: "4px",
+								}}>
 								<div
 									style={{
 										display: "flex",
-										flexDirection: windowWidth < 270 ? "column" : "row",
+										alignItems: "center",
 										gap: "4px",
+										flexShrink: 0,
 									}}>
-									<div
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "4px",
-											flexShrink: 0,
-										}}>
-										<span style={{ fontWeight: "bold" }}>Task Directory:</span>
-									</div>
-									<div
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "3px",
-											flex: 1,
-											whiteSpace: "nowrap",
-											overflow: "hidden",
-											textOverflow: "ellipsis",
-										}}>
-										<span style={{ opacity: 0.9 }}>{`${taskDirectory}`}</span>
-									</div>
+									<span style={{ fontWeight: "bold" }}>Task Directory:</span>
 								</div>
-							)}
-							{currentTaskItem?.id && (
 								<div
 									style={{
 										display: "flex",
-										flexDirection: windowWidth < 270 ? "column" : "row",
-										gap: "4px",
+										alignItems: "center",
+										gap: "3px",
+										flex: 1,
+										whiteSpace: "nowrap",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
 									}}>
-									<div
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "4px",
-											flexShrink: 0,
-										}}>
-										<span style={{ fontWeight: "bold" }}>Shadow Git Directory:</span>
-									</div>
-									<div
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "3px",
-											flex: 1,
-											whiteSpace: "nowrap",
-											overflow: "hidden",
-											textOverflow: "ellipsis",
-										}}>
-										<span style={{ opacity: 0.9 }}>{`${shadowGitDirectory}`}</span>
-									</div>
+									<span style={{ opacity: 0.9 }}>{`${taskDirectory || "Unknown"}`}</span>
 								</div>
-							)}
+							</div>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: windowWidth < 270 ? "column" : "row",
+									gap: "4px",
+								}}>
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "4px",
+										flexShrink: 0,
+									}}>
+									<span style={{ fontWeight: "bold" }}>Shadow Git Directory:</span>
+								</div>
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "3px",
+										flex: 1,
+										whiteSpace: "nowrap",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+									}}>
+									<span style={{ opacity: 0.9 }}>{`${shadowGitDirectory || "Unknown"}`}</span>
+								</div>
+							</div>
 							{ContextWindowComponent}
 							{isCostAvailable && (
 								<div
