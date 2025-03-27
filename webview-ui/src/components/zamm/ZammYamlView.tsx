@@ -1,0 +1,244 @@
+import { useEffect, useState } from "react"
+import styled from "styled-components"
+import { vscode } from "../../utils/vscode"
+import { ZammYaml } from "../../../../src/shared/ExtensionMessage"
+
+interface ZammYamlViewProps {
+	showZammView: boolean
+	onClose: () => void
+}
+
+const ZammYamlView = ({ showZammView, onClose }: ZammYamlViewProps) => {
+	const [yamlData, setYamlData] = useState<ZammYaml | null>(null)
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState<string | null>(null)
+
+	useEffect(() => {
+		if (showZammView) {
+			setLoading(true)
+			setError(null)
+
+			// Request the YAML content from the extension
+			vscode.postMessage({ type: "requestZammYaml" })
+
+			// Set up a listener for the response
+			const handleMessage = (event: MessageEvent) => {
+				const message = event.data
+				if (message.type === "zammYamlContent") {
+					if (message.error) {
+						setError(message.error)
+						setLoading(false)
+					} else if (message.zammYamlContent) {
+						setYamlData(message.zammYamlContent)
+						setLoading(false)
+					} else {
+						setError("Received empty ZAMM YAML content")
+						setLoading(false)
+					}
+				}
+			}
+
+			window.addEventListener("message", handleMessage)
+			return () => {
+				window.removeEventListener("message", handleMessage)
+			}
+		}
+	}, [showZammView])
+
+	if (!showZammView) {
+		return null
+	}
+
+	return (
+		<Container>
+			<Header>
+				<Title>ZAMM Configuration</Title>
+				<CloseButton onClick={onClose}>×</CloseButton>
+			</Header>
+
+			<Content>
+				{loading && <Loading>Loading ZAMM configuration...</Loading>}
+
+				{error && <ErrorMessage>{error}</ErrorMessage>}
+
+				{!loading && !error && yamlData && (
+					<>
+						{yamlData.project && (
+							<Section>
+								<SectionTitle>Project</SectionTitle>
+								<ProjectName>{yamlData.project.name}</ProjectName>
+								<Description>{yamlData.project.description}</Description>
+							</Section>
+						)}
+
+						{yamlData.requirements && yamlData.requirements.length > 0 && (
+							<Section>
+								<SectionTitle>Requirements</SectionTitle>
+								{yamlData.requirements.map((req, index) => (
+									<Requirement key={index}>
+										<RequirementName>{req.name}</RequirementName>
+										<Description>{req.description}</Description>
+
+										{req.commit && (
+											<CommitInfo>
+												<CommitLabel>Commit:</CommitLabel>
+												<CommitHash>{req.commit}</CommitHash>
+											</CommitInfo>
+										)}
+
+										{req.implementationDetails && req.implementationDetails.length > 0 && (
+											<ImplementationDetails>
+												<DetailsTitle>Implementation Details:</DetailsTitle>
+												<DetailsList>
+													{req.implementationDetails.map((detail, i) => (
+														<DetailItem key={i}>{detail}</DetailItem>
+													))}
+												</DetailsList>
+											</ImplementationDetails>
+										)}
+									</Requirement>
+								))}
+							</Section>
+						)}
+					</>
+				)}
+			</Content>
+		</Container>
+	)
+}
+
+const Container = styled.div`
+	display: flex;
+	flex-direction: column;
+	background-color: var(--vscode-editor-background);
+	border: 1px solid var(--vscode-panel-border);
+	border-radius: 4px;
+	margin: 0 20px 20px;
+	overflow: hidden;
+`
+
+const Header = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 15px;
+	background-color: var(--vscode-panelTitle-activeBorder);
+	border-bottom: 1px solid var(--vscode-panel-border);
+`
+
+const Title = styled.h2`
+	margin: 0;
+	font-size: 16px;
+	color: var(--vscode-panelTitle-activeForeground);
+`
+
+const CloseButton = styled.button`
+	background: none;
+	border: none;
+	color: var(--vscode-panelTitle-activeForeground);
+	font-size: 20px;
+	cursor: pointer;
+	padding: 0 5px;
+
+	&:hover {
+		opacity: 0.8;
+	}
+`
+
+const Content = styled.div`
+	padding: 15px;
+	overflow-y: auto;
+	max-height: 400px;
+`
+
+const Loading = styled.div`
+	color: var(--vscode-foreground);
+	font-style: italic;
+	padding: 10px 0;
+`
+
+const ErrorMessage = styled.div`
+	color: var(--vscode-errorForeground);
+	padding: 10px 0;
+`
+
+const Section = styled.div`
+	margin-bottom: 20px;
+`
+
+const SectionTitle = styled.h3`
+	margin: 0 0 10px 0;
+	font-size: 14px;
+	color: var(--vscode-foreground);
+	border-bottom: 1px solid var(--vscode-panel-border);
+	padding-bottom: 5px;
+`
+
+const ProjectName = styled.h4`
+	margin: 0 0 5px 0;
+	font-size: 16px;
+	color: var(--vscode-foreground);
+`
+
+const Description = styled.p`
+	margin: 0 0 10px 0;
+	color: var(--vscode-foreground);
+	line-height: 1.5;
+`
+
+const Requirement = styled.div`
+	margin-bottom: 15px;
+	padding: 10px;
+	background-color: var(--vscode-editor-inactiveSelectionBackground);
+	border-radius: 3px;
+`
+
+const RequirementName = styled.h4`
+	margin: 0 0 5px 0;
+	font-size: 14px;
+	color: var(--vscode-foreground);
+`
+
+const CommitInfo = styled.div`
+	display: flex;
+	align-items: center;
+	margin: 5px 0;
+	font-family: var(--vscode-editor-font-family);
+	font-size: 12px;
+`
+
+const CommitLabel = styled.span`
+	color: var(--vscode-descriptionForeground);
+	margin-right: 5px;
+`
+
+const CommitHash = styled.code`
+	background-color: var(--vscode-textBlockQuote-background);
+	padding: 2px 4px;
+	border-radius: 3px;
+	font-family: var(--vscode-editor-font-family);
+`
+
+const ImplementationDetails = styled.div`
+	margin-top: 10px;
+`
+
+const DetailsTitle = styled.h5`
+	margin: 0 0 5px 0;
+	font-size: 12px;
+	color: var(--vscode-descriptionForeground);
+`
+
+const DetailsList = styled.ul`
+	margin: 0;
+	padding-left: 20px;
+`
+
+const DetailItem = styled.li`
+	margin-bottom: 5px;
+	color: var(--vscode-foreground);
+	font-size: 12px;
+	line-height: 1.4;
+`
+
+export default ZammYamlView

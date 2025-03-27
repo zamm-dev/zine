@@ -9,6 +9,21 @@ import { HistoryItem } from "./HistoryItem"
 import { McpServer, McpMarketplaceCatalog, McpMarketplaceItem, McpDownloadResponse } from "./mcp"
 import { TelemetrySetting } from "./TelemetrySetting"
 
+export interface ZammRequirement {
+	name?: string
+	description?: string
+	commit?: string
+	implementationDetails?: string[]
+}
+
+export interface ZammYaml {
+	project?: {
+		name?: string
+		description?: string
+	}
+	requirements?: ZammRequirement[]
+}
+
 // webview will hold state
 export interface ExtensionMessage {
 	type:
@@ -34,6 +49,7 @@ export interface ExtensionMessage {
 		| "openGraphData"
 		| "isImageUrlResult"
 		| "didUpdateSettings"
+		| "zammYamlContent"
 	text?: string
 	action?:
 		| "chatButtonClicked"

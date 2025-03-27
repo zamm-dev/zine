@@ -479,6 +479,42 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 		webview.onDidReceiveMessage(
 			async (message: WebviewMessage) => {
 				switch (message.type) {
+					case "requestZammYaml":
+						try {
+							const fs = require("fs")
+							const path = require("path")
+							const yaml = require("js-yaml")
+
+							// Get the path to the zamm.yaml file in the workspace root
+							const workspaceFolders = vscode.workspace.workspaceFolders
+							if (!workspaceFolders || workspaceFolders.length === 0) {
+								throw new Error("No workspace folder is open")
+							}
+
+							const zammYamlPath = path.join(workspaceFolders[0].uri.fsPath, "zamm.yaml")
+
+							// Check if the file exists
+							if (!fs.existsSync(zammYamlPath)) {
+								throw new Error("zamm.yaml file not found in workspace root")
+							}
+
+							// Read and parse the YAML file
+							const fileContent = fs.readFileSync(zammYamlPath, "utf8")
+							const zammYamlContent = yaml.load(fileContent)
+
+							// Send the content back to the webview
+							webview.postMessage({
+								type: "zammYamlContent",
+								zammYamlContent,
+							})
+						} catch (error) {
+							// Send error message back to the webview
+							webview.postMessage({
+								type: "zammYamlContent",
+								error: error instanceof Error ? error.message : "Failed to load ZAMM YAML content",
+							})
+						}
+						break
 					case "authStateChanged":
 						await this.setUserInfo(message.user || undefined)
 						await this.postStateToWebview()
