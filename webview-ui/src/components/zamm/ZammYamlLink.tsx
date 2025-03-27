@@ -24,6 +24,7 @@ const Container = styled.div`
 `
 
 const StyledLink = styled(VSCodeLink)`
+	color: var(--vscode-descriptionForeground);
 	display: flex;
 	align-items: center;
 	text-decoration: none;

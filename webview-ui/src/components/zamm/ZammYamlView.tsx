@@ -105,7 +105,7 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 	background-color: none;
-	border: 1px solid var(--vscode-panel-border);
+	border: 1px solid color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 100%, transparent);
 	border-radius: 4px;
 	margin: 0 20px 20px;
 	overflow: hidden;
@@ -138,7 +138,7 @@ const SectionTitle = styled.h3`
 	margin: 0 0 10px 0;
 	font-size: 14px;
 	color: var(--vscode-descriptionForeground);
-	border-bottom: 1px solid var(--vscode-panel-border);
+	border-bottom: 1px solid var(--vscode-descriptionForeground);
 	padding-bottom: 5px;
 	font-weight: 500;
 	text-transform: uppercase;
