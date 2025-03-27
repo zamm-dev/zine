@@ -109,7 +109,7 @@ const Container = styled.div`
 	border-radius: 4px;
 	margin: 0 20px 20px;
 	overflow: hidden;
-	min-height: 500px;
+	min-height: 400px;
 `
 
 const Content = styled.div`
@@ -132,6 +132,10 @@ const ErrorMessage = styled.div`
 
 const Section = styled.div`
 	margin-bottom: 20px;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
 `
 
 const SectionTitle = styled.h3`
@@ -167,6 +171,10 @@ const Requirement = styled.div`
 	transition:
 		opacity 0.2s ease,
 		background-color 0.2s ease;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
 
 	&:hover {
 		background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 100%, transparent);
