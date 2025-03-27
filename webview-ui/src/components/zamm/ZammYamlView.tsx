@@ -208,6 +208,11 @@ const CommitHash = styled.code`
 	border-radius: 3px;
 	font-family: var(--vscode-editor-font-family);
 	color: var(--vscode-descriptionForeground);
+	display: inline-block;
+	max-width: 8ch;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 `
 
 const ImplementationDetails = styled.div`
