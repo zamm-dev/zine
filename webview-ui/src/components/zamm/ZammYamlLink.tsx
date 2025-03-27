@@ -2,15 +2,17 @@ import { VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 import styled from "styled-components"
 
 interface ZammYamlLinkProps {
+	isShowing: boolean
 	onClick: () => void
 }
 
-const ZammYamlLink = ({ onClick }: ZammYamlLinkProps) => {
+const ZammYamlLink = ({ isShowing, onClick }: ZammYamlLinkProps) => {
+	const text = isShowing ? "Hide ZAMM Configuration" : "View ZAMM Configuration"
 	return (
 		<Container>
 			<StyledLink onClick={onClick}>
 				<Icon className="codicon codicon-book" />
-				<span>View ZAMM Configuration</span>
+				<span>{text}</span>
 			</StyledLink>
 		</Container>
 	)

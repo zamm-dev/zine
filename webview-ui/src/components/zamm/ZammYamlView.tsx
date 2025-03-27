@@ -5,10 +5,9 @@ import { ZammYaml } from "../../../../src/shared/ExtensionMessage"
 
 interface ZammYamlViewProps {
 	showZammView: boolean
-	onClose: () => void
 }
 
-const ZammYamlView = ({ showZammView, onClose }: ZammYamlViewProps) => {
+const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 	const [yamlData, setYamlData] = useState<ZammYaml | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -51,11 +50,6 @@ const ZammYamlView = ({ showZammView, onClose }: ZammYamlViewProps) => {
 
 	return (
 		<Container>
-			<Header>
-				<Title>ZAMM Configuration</Title>
-				<CloseButton onClick={onClose}>×</CloseButton>
-			</Header>
-
 			<Content>
 				{loading && <Loading>Loading ZAMM configuration...</Loading>}
 
@@ -116,34 +110,6 @@ const Container = styled.div`
 	margin: 0 20px 20px;
 	overflow: hidden;
 	min-height: 500px;
-`
-
-const Header = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 10px 15px;
-	background-color: none;
-	border-bottom: 1px solid var(--vscode-panel-border);
-`
-
-const Title = styled.h2`
-	margin: 0;
-	font-size: 16px;
-	color: var(--vscode-panelTitle-activeForeground);
-`
-
-const CloseButton = styled.button`
-	background: none;
-	border: none;
-	color: var(--vscode-panelTitle-activeForeground);
-	font-size: 20px;
-	cursor: pointer;
-	padding: 0 5px;
-
-	&:hover {
-		opacity: 0.8;
-	}
 `
 
 const Content = styled.div`

@@ -824,8 +824,8 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 						</p>
 					</ZineIntro>
 
-					<ZammYamlLink onClick={() => setShowZammView(true)} />
-					{showZammView && <ZammYamlView showZammView={showZammView} onClose={() => setShowZammView(false)} />}
+					<ZammYamlLink isShowing={showZammView} onClick={() => setShowZammView(!showZammView)} />
+					{showZammView && <ZammYamlView showZammView={showZammView} />}
 
 					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
 				</div>
