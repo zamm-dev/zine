@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { vscode } from "../../utils/vscode"
-import { ZammYaml } from "../../../../src/shared/Zamm"
+import { ZammYaml, ZammRequirement } from "../../../../src/shared/Zamm"
+import RequirementDetailView from "./RequirementDetailView"
 
 interface ZammYamlViewProps {
 	showZammView: boolean
@@ -11,6 +12,7 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 	const [yamlData, setYamlData] = useState<ZammYaml | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
+	const [selectedRequirement, setSelectedRequirement] = useState<ZammRequirement | null>(null)
 
 	useEffect(() => {
 		if (showZammView) {
@@ -48,6 +50,14 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 		return null
 	}
 
+	const handleRequirementClick = (requirement: ZammRequirement) => {
+		setSelectedRequirement(requirement)
+	}
+
+	const handleBackClick = () => {
+		setSelectedRequirement(null)
+	}
+
 	return (
 		<Container>
 			<Content>
@@ -55,64 +65,59 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 
 				{error && <ErrorMessage>{error}</ErrorMessage>}
 
-				{!loading && !error && yamlData && (
-					<>
-						{yamlData.project && (
-							<Section>
-								<SectionTitle>Project Details</SectionTitle>
-								<ProjectName>{yamlData.project.name}</ProjectName>
-								<Description>{yamlData.project.description}</Description>
+				{!loading && !error && yamlData && selectedRequirement ? (
+					<RequirementDetailView requirement={selectedRequirement} onBackClick={handleBackClick} />
+				) : (
+					!loading &&
+					!error &&
+					yamlData && (
+						<>
+							{yamlData.project && (
+								<Section>
+									<SectionTitle>Project Details</SectionTitle>
+									<ProjectName>{yamlData.project.name}</ProjectName>
+									<Description>{yamlData.project.description}</Description>
 
-								{yamlData.project.implementations && yamlData.project.implementations.length > 0 && (
-									<ImplementationSubsection>
-										<DetailsTitle>Project Implementations:</DetailsTitle>
-										{yamlData.project.implementations.map((impl, i) => (
-											<Implementation key={i}>
-												<ImplementationName>{impl.name}</ImplementationName>
-												{impl.description && <Description>{impl.description}</Description>}
-											</Implementation>
-										))}
-									</ImplementationSubsection>
-								)}
-							</Section>
-						)}
+									{yamlData.project.implementations && yamlData.project.implementations.length > 0 && (
+										<ImplementationSubsection>
+											<DetailsTitle>Project Implementations:</DetailsTitle>
+											{yamlData.project.implementations.map((impl, i) => (
+												<Implementation key={i}>
+													<ImplementationName>{impl.name}</ImplementationName>
+													{impl.description && <Description>{impl.description}</Description>}
+												</Implementation>
+											))}
+										</ImplementationSubsection>
+									)}
+								</Section>
+							)}
 
-						{yamlData.requirements && yamlData.requirements.length > 0 && (
-							<Section>
-								<SectionTitle>Requirements</SectionTitle>
-								{yamlData.requirements.map((req, index) => (
-									<Requirement key={index}>
-										<RequirementName>{req.name}</RequirementName>
-										<Description>{req.description}</Description>
-
-										{req.implementations && req.implementations.length > 0 && (
-											<ImplementationSubsection>
-												<DetailsTitle>Requirement Implementations:</DetailsTitle>
-												{req.implementations.map((impl, i) => (
-													<Implementation key={i}>
-														<ImplementationName>{impl.name}</ImplementationName>
-														{impl.commit && (
-															<CommitInfo>
-																<CommitLabel>Commit:</CommitLabel>
-																<CommitHash>{impl.commit}</CommitHash>
-															</CommitInfo>
-														)}
-														{impl.details && impl.details.length > 0 && (
-															<DetailsList>
-																{impl.details.map((detail, j) => (
-																	<DetailItem key={j}>{detail}</DetailItem>
-																))}
-															</DetailsList>
-														)}
-													</Implementation>
-												))}
-											</ImplementationSubsection>
-										)}
-									</Requirement>
-								))}
-							</Section>
-						)}
-					</>
+							{yamlData.requirements && yamlData.requirements.length > 0 && (
+								<Section>
+									<SectionTitle>Requirements</SectionTitle>
+									{yamlData.requirements.map((req, index) => (
+										<Requirement
+											key={index}
+											onClick={() => handleRequirementClick(req)}
+											role="button"
+											tabIndex={0}>
+											<RequirementName>{req.name}</RequirementName>
+											<Description>{req.description}</Description>
+											{req.implementations && req.implementations.length > 0 && (
+												<ImplementationIndicator>
+													<i className="codicon codicon-list-tree" style={{ marginRight: "5px" }}></i>
+													<span>
+														{req.implementations.length} implementation
+														{req.implementations.length !== 1 ? "s" : ""}
+													</span>
+												</ImplementationIndicator>
+											)}
+										</Requirement>
+									))}
+								</Section>
+							)}
+						</>
+					)
 				)}
 			</Content>
 		</Container>
@@ -187,6 +192,7 @@ const Requirement = styled.div`
 	position: relative;
 	overflow: hidden;
 	opacity: 0.8;
+	cursor: pointer;
 	transition:
 		opacity 0.2s ease,
 		background-color 0.2s ease;
@@ -208,32 +214,6 @@ const RequirementName = styled.h4`
 	font-weight: 500;
 `
 
-const CommitInfo = styled.div`
-	display: flex;
-	align-items: center;
-	margin: 5px 0;
-	font-family: var(--vscode-editor-font-family);
-	font-size: 12px;
-`
-
-const CommitLabel = styled.span`
-	color: var(--vscode-descriptionForeground);
-	margin-right: 5px;
-`
-
-const CommitHash = styled.code`
-	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 80%, transparent);
-	padding: 2px 4px;
-	border-radius: 3px;
-	font-family: var(--vscode-editor-font-family);
-	color: var(--vscode-descriptionForeground);
-	display: inline-block;
-	max-width: 8ch;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-`
-
 const ImplementationSubsection = styled.div`
 	margin-top: 10px;
 
@@ -250,18 +230,6 @@ const DetailsTitle = styled.h5`
 	text-transform: uppercase;
 `
 
-const DetailsList = styled.ul`
-	margin: 0;
-	padding-left: 20px;
-`
-
-const DetailItem = styled.li`
-	margin-bottom: 5px;
-	color: var(--vscode-descriptionForeground);
-	font-size: 12px;
-	line-height: 1.4;
-`
-
 const Implementation = styled.div`
 	margin-top: 8px;
 	padding: var(--standard-padding);
@@ -274,6 +242,14 @@ const ImplementationName = styled.h5`
 	font-size: 13px;
 	color: var(--vscode-descriptionForeground);
 	font-weight: 500;
+`
+
+const ImplementationIndicator = styled.div`
+	color: var(--vscode-descriptionForeground);
+	font-size: 12px;
+	margin-top: 5px;
+	display: flex;
+	align-items: center;
 `
 
 export default ZammYamlView
