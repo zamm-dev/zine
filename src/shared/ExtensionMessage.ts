@@ -34,6 +34,7 @@ export interface ExtensionMessage {
 		| "openGraphData"
 		| "isImageUrlResult"
 		| "didUpdateSettings"
+		| "zammYamlContent"
 	text?: string
 	action?:
 		| "chatButtonClicked"

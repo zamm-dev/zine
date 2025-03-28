@@ -1,4 +1,6 @@
 import { VSCodeButton, VSCodeLink } from "@vscode/webview-ui-toolkit/react"
+import ZammYamlLink from "../zamm/ZammYamlLink"
+import ZammYamlView from "../zamm/ZammView"
 import debounce from "debounce"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useDeepCompareEffect, useEvent, useMount } from "react-use"
@@ -38,6 +40,7 @@ interface ChatViewProps {
 export const MAX_IMAGES_PER_MESSAGE = 20 // Anthropic limits to 20 images
 
 const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryView }: ChatViewProps) => {
+	const [showZammView, setShowZammView] = useState(false)
 	const {
 		version,
 		clineMessages: messages,
@@ -820,6 +823,10 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 							.
 						</p>
 					</ZineIntro>
+
+					<ZammYamlLink isShowing={showZammView} onClick={() => setShowZammView(!showZammView)} />
+					{showZammView && <ZammYamlView showZammView={showZammView} />}
+
 					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
 				</div>
 			)}

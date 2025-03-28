@@ -63,6 +63,7 @@ export interface WebviewMessage {
 		| "updateSettings"
 		| "clearAllTaskHistory"
 		| "optionsResponse"
+		| "requestZammYaml"
 	// | "relaunchChromeDebugMode"
 	text?: string
 	disabled?: boolean
