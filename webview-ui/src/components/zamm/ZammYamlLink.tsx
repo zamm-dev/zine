@@ -20,7 +20,6 @@ const ZammYamlLink = ({ isShowing, onClick }: ZammYamlLinkProps) => {
 
 const Container = styled.div`
 	padding: 10px 20px;
-	margin-bottom: 10px;
 `
 
 const StyledLink = styled(VSCodeLink)`
