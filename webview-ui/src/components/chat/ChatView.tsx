@@ -35,12 +35,12 @@ interface ChatViewProps {
 	showAnnouncement: boolean
 	hideAnnouncement: () => void
 	showHistoryView: () => void
+	showZammView: () => void
 }
 
 export const MAX_IMAGES_PER_MESSAGE = 20 // Anthropic limits to 20 images
 
-const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryView }: ChatViewProps) => {
-	const [showZammView, setShowZammView] = useState(false)
+const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryView, showZammView }: ChatViewProps) => {
 	const {
 		version,
 		clineMessages: messages,
@@ -824,8 +824,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 						</p>
 					</ZineIntro>
 
-					<ZammYamlLink isShowing={showZammView} onClick={() => setShowZammView(!showZammView)} />
-					{showZammView && <ZammYamlView showZammView={showZammView} />}
+					<ZammYamlLink isShowing={false} onClick={() => showZammView()} />
 
 					{taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
 				</div>

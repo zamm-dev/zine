@@ -10,6 +10,7 @@ import { ExtensionStateContextProvider, useExtensionState } from "./context/Exte
 import { FirebaseAuthProvider } from "./context/FirebaseAuthContext"
 import { vscode } from "./utils/vscode"
 import McpView from "./components/mcp/McpView"
+import ZammView from "./components/zamm/ZammView"
 
 const AppContent = () => {
 	const { didHydrateState, showWelcome, shouldShowAnnouncement, telemetrySetting, vscMachineId } = useExtensionState()
@@ -17,6 +18,7 @@ const AppContent = () => {
 	const [showHistory, setShowHistory] = useState(false)
 	const [showMcp, setShowMcp] = useState(false)
 	const [showAccount, setShowAccount] = useState(false)
+	const [showZamm, setShowZamm] = useState(false)
 	const [showAnnouncement, setShowAnnouncement] = useState(false)
 
 	const handleMessage = useCallback((e: MessageEvent) => {
@@ -29,30 +31,35 @@ const AppContent = () => {
 						setShowHistory(false)
 						setShowMcp(false)
 						setShowAccount(false)
+						setShowZamm(false)
 						break
 					case "historyButtonClicked":
 						setShowSettings(false)
 						setShowHistory(true)
 						setShowMcp(false)
 						setShowAccount(false)
+						setShowZamm(false)
 						break
 					case "mcpButtonClicked":
 						setShowSettings(false)
 						setShowHistory(false)
 						setShowMcp(true)
 						setShowAccount(false)
+						setShowZamm(false)
 						break
 					case "accountLoginClicked":
 						setShowSettings(false)
 						setShowHistory(false)
 						setShowMcp(false)
 						setShowAccount(true)
+						setShowZamm(false)
 						break
 					case "chatButtonClicked":
 						setShowSettings(false)
 						setShowHistory(false)
 						setShowMcp(false)
 						setShowAccount(false)
+						setShowZamm(false)
 						break
 				}
 				break
@@ -91,14 +98,24 @@ const AppContent = () => {
 					{showHistory && <HistoryView onDone={() => setShowHistory(false)} />}
 					{showMcp && <McpView onDone={() => setShowMcp(false)} />}
 					{showAccount && <AccountView onDone={() => setShowAccount(false)} />}
+					{showZamm && <ZammView onDone={() => setShowZamm(false)} />}
 					{/* Do not conditionally load ChatView, it's expensive and there's state we don't want to lose (user input, disableInput, askResponse promise, etc.) */}
 					<ChatView
 						showHistoryView={() => {
 							setShowSettings(false)
 							setShowMcp(false)
+							setShowAccount(false)
+							setShowZamm(false)
 							setShowHistory(true)
 						}}
-						isHidden={showSettings || showHistory || showMcp || showAccount}
+						showZammView={() => {
+							setShowSettings(false)
+							setShowHistory(false)
+							setShowMcp(false)
+							setShowAccount(false)
+							setShowZamm(true)
+						}}
+						isHidden={showSettings || showHistory || showMcp || showAccount || showZamm}
 						showAnnouncement={showAnnouncement}
 						hideAnnouncement={() => {
 							setShowAnnouncement(false)

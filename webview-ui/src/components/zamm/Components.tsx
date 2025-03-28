@@ -13,7 +13,13 @@ export const SectionTitle = styled.h3`
 export const SectionHeading = styled.h4`
 	margin: 0 0 5px 0;
 	font-size: 16px;
-	color: var(--vscode-descriptionForeground);
+	color: var(--vscode-foreground);
+`
+
+export const SectionDescription = styled.p`
+	margin: 0 0 10px 0;
+	color: var(--vscode-foreground);
+	line-height: 1.5;
 `
 
 const hoverEffect = `
@@ -27,6 +33,7 @@ export const InfoBox = styled.div<{ clickable?: boolean }>`
 	margin-bottom: 15px;
 	padding: var(--standard-padding);
 	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 65%, transparent);
+	color: var(--vscode-foreground);
 	border-radius: 4px;
 	position: relative;
 	overflow: hidden;
@@ -41,4 +48,11 @@ export const InfoBox = styled.div<{ clickable?: boolean }>`
 	}
 
 	${({ clickable }) => (clickable ? hoverEffect : "")}
+`
+
+export const InfoBoxTitle = styled.h5`
+	margin: 0 0 5px 0;
+	font-size: 13px;
+	color: var(--vscode-foreground);
+	font-weight: 500;
 `

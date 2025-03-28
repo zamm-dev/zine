@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { ZammYaml, ZammRequirement } from "../../../../src/shared/Zamm"
-import { InfoBox, SectionHeading, SectionTitle } from "./Components"
+import { InfoBox, InfoBoxTitle, SectionDescription, SectionHeading, SectionTitle } from "./Components"
 
 interface ProjectOverviewProps {
 	yamlData: ZammYaml
@@ -15,14 +15,14 @@ const ProjectOverview = ({ yamlData, onRequirementClick, getImplementationName }
 				<Section>
 					<SectionTitle>Project Details</SectionTitle>
 					<SectionHeading>{yamlData.project.name}</SectionHeading>
-					<Description>{yamlData.project.description}</Description>
+					<SectionDescription>{yamlData.project.description}</SectionDescription>
 
 					{yamlData.project.implementations && yamlData.project.implementations.length > 0 && (
 						<ImplementationSubsection>
 							<DetailsTitle>Project Implementations</DetailsTitle>
 							{yamlData.project.implementations.map((impl, i) => (
 								<InfoBox key={impl.id || i}>
-									<ImplementationName>{impl.name || getImplementationName(impl.id)}</ImplementationName>
+									<InfoBoxTitle>{getImplementationName(impl.id)}</InfoBoxTitle>
 									{impl.description && <Description>{impl.description}</Description>}
 								</InfoBox>
 							))}
@@ -36,7 +36,7 @@ const ProjectOverview = ({ yamlData, onRequirementClick, getImplementationName }
 					<SectionTitle>Requirements</SectionTitle>
 					{yamlData.requirements.map((req, index) => (
 						<InfoBox clickable key={index} onClick={() => onRequirementClick(req)} role="button" tabIndex={0}>
-							<RequirementName>{req.name}</RequirementName>
+							<InfoBoxTitle>{req.name}</InfoBoxTitle>
 							<Description>{req.description}</Description>
 							{req.implementations && req.implementations.length > 0 && (
 								<ImplementationIndicator>
@@ -65,15 +65,7 @@ const Section = styled.div`
 
 const Description = styled.p`
 	margin: 0 0 10px 0;
-	color: var(--vscode-descriptionForeground);
 	line-height: 1.5;
-`
-
-const RequirementName = styled.h4`
-	margin: 0 0 5px 0;
-	font-size: 14px;
-	color: var(--vscode-descriptionForeground);
-	font-weight: 500;
 `
 
 const ImplementationSubsection = styled.div`
@@ -90,13 +82,6 @@ const DetailsTitle = styled.h5`
 	color: var(--vscode-descriptionForeground);
 	font-weight: 500;
 	text-transform: uppercase;
-`
-
-const ImplementationName = styled.h5`
-	margin: 0 0 5px 0;
-	font-size: 13px;
-	color: var(--vscode-descriptionForeground);
-	font-weight: 500;
 `
 
 const ImplementationIndicator = styled.div`
