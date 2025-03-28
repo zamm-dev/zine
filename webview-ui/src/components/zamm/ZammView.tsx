@@ -3,6 +3,7 @@ import styled from "styled-components"
 import { vscode } from "../../utils/vscode"
 import { ZammYaml, ZammRequirement } from "../../../../src/shared/Zamm"
 import RequirementDetailView from "./RequirementDetailView"
+import { InfoBox, SectionHeading, SectionTitle } from "./Components"
 
 interface ZammYamlViewProps {
 	showZammView: boolean
@@ -66,7 +67,11 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 				{error && <ErrorMessage>{error}</ErrorMessage>}
 
 				{!loading && !error && yamlData && selectedRequirement ? (
-					<RequirementDetailView requirement={selectedRequirement} onBackClick={handleBackClick} />
+					<RequirementDetailView
+						projectName={yamlData.project?.name ?? "Project"}
+						requirement={selectedRequirement}
+						onBackClick={handleBackClick}
+					/>
 				) : (
 					!loading &&
 					!error &&
@@ -75,17 +80,17 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 							{yamlData.project && (
 								<Section>
 									<SectionTitle>Project Details</SectionTitle>
-									<ProjectName>{yamlData.project.name}</ProjectName>
+									<SectionHeading>{yamlData.project.name}</SectionHeading>
 									<Description>{yamlData.project.description}</Description>
 
 									{yamlData.project.implementations && yamlData.project.implementations.length > 0 && (
 										<ImplementationSubsection>
-											<DetailsTitle>Project Implementations:</DetailsTitle>
+											<DetailsTitle>Project Implementations</DetailsTitle>
 											{yamlData.project.implementations.map((impl, i) => (
-												<Implementation key={i}>
+												<InfoBox key={i}>
 													<ImplementationName>{impl.name}</ImplementationName>
 													{impl.description && <Description>{impl.description}</Description>}
-												</Implementation>
+												</InfoBox>
 											))}
 										</ImplementationSubsection>
 									)}
@@ -96,7 +101,8 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 								<Section>
 									<SectionTitle>Requirements</SectionTitle>
 									{yamlData.requirements.map((req, index) => (
-										<Requirement
+										<InfoBox
+											clickable
 											key={index}
 											onClick={() => handleRequirementClick(req)}
 											role="button"
@@ -112,7 +118,7 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 													</span>
 												</ImplementationIndicator>
 											)}
-										</Requirement>
+										</InfoBox>
 									))}
 								</Section>
 							)}
@@ -162,49 +168,10 @@ const Section = styled.div`
 	}
 `
 
-const SectionTitle = styled.h3`
-	margin: 0 0 10px 0;
-	font-size: 14px;
-	color: var(--vscode-descriptionForeground);
-	border-bottom: 1px solid var(--vscode-descriptionForeground);
-	padding-bottom: 5px;
-	font-weight: 500;
-	text-transform: uppercase;
-`
-
-const ProjectName = styled.h4`
-	margin: 0 0 5px 0;
-	font-size: 16px;
-	color: var(--vscode-descriptionForeground);
-`
-
 const Description = styled.p`
 	margin: 0 0 10px 0;
 	color: var(--vscode-descriptionForeground);
 	line-height: 1.5;
-`
-
-const Requirement = styled.div`
-	margin-bottom: 15px;
-	padding: var(--standard-padding);
-	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 65%, transparent);
-	border-radius: 4px;
-	position: relative;
-	overflow: hidden;
-	opacity: 0.8;
-	cursor: pointer;
-	transition:
-		opacity 0.2s ease,
-		background-color 0.2s ease;
-
-	&:last-child {
-		margin-bottom: 0;
-	}
-
-	&:hover {
-		background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 100%, transparent);
-		opacity: 1;
-	}
 `
 
 const RequirementName = styled.h4`
@@ -228,13 +195,6 @@ const DetailsTitle = styled.h5`
 	color: var(--vscode-descriptionForeground);
 	font-weight: 500;
 	text-transform: uppercase;
-`
-
-const Implementation = styled.div`
-	margin-top: 8px;
-	padding: var(--standard-padding);
-	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 40%, transparent);
-	border-radius: 3px;
 `
 
 const ImplementationName = styled.h5`

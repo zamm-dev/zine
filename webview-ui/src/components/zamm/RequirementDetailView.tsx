@@ -1,32 +1,34 @@
-import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import styled from "styled-components"
 import { ZammRequirement } from "../../../../src/shared/Zamm"
+import { InfoBox, SectionHeading, SectionTitle } from "./Components"
 
 interface RequirementDetailViewProps {
+	projectName: string
 	requirement: ZammRequirement
 	onBackClick: () => void
 }
 
-const RequirementDetailView = ({ requirement, onBackClick }: RequirementDetailViewProps) => {
+const RequirementDetailView = ({ projectName, requirement, onBackClick }: RequirementDetailViewProps) => {
 	return (
 		<Section>
 			<BackButtonContainer>
 				<a href="#" onClick={onBackClick}>
 					<i className="codicon codicon-arrow-left" style={{ marginRight: "5px" }}></i>
-					Back to Requirements
+					{projectName} Home
 				</a>
 			</BackButtonContainer>
 
 			<RequirementHeader>
-				<RequirementName>{requirement.name}</RequirementName>
+				<SectionTitle>Requirement Details</SectionTitle>
+				<SectionHeading>{requirement.name}</SectionHeading>
 				<Description>{requirement.description}</Description>
 			</RequirementHeader>
 
 			{requirement.implementations && requirement.implementations.length > 0 && (
 				<ImplementationSubsection>
-					<DetailsTitle>Requirement Implementations:</DetailsTitle>
+					<SectionTitle>Implementations</SectionTitle>
 					{requirement.implementations.map((impl, i) => (
-						<Implementation key={i}>
+						<InfoBox key={i}>
 							<ImplementationName>{impl.name}</ImplementationName>
 							{impl.commit && (
 								<CommitInfo>
@@ -41,7 +43,7 @@ const RequirementDetailView = ({ requirement, onBackClick }: RequirementDetailVi
 									))}
 								</DetailsList>
 							)}
-						</Implementation>
+						</InfoBox>
 					))}
 				</ImplementationSubsection>
 			)}
@@ -71,13 +73,6 @@ const BackButtonContainer = styled.div`
 
 const RequirementHeader = styled.div`
 	margin-bottom: 15px;
-`
-
-const RequirementName = styled.h4`
-	margin: 0 0 5px 0;
-	font-size: 14px;
-	color: var(--vscode-descriptionForeground);
-	font-weight: 500;
 `
 
 const Description = styled.p`
@@ -120,14 +115,6 @@ const ImplementationSubsection = styled.div`
 	}
 `
 
-const DetailsTitle = styled.h5`
-	margin: 0 0 5px 0;
-	font-size: 12px;
-	color: var(--vscode-descriptionForeground);
-	font-weight: 500;
-	text-transform: uppercase;
-`
-
 const DetailsList = styled.ul`
 	margin: 0;
 	padding-left: 20px;
@@ -138,13 +125,6 @@ const DetailItem = styled.li`
 	color: var(--vscode-descriptionForeground);
 	font-size: 12px;
 	line-height: 1.4;
-`
-
-const Implementation = styled.div`
-	margin-top: 8px;
-	padding: 12px;
-	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 40%, transparent);
-	border-radius: 3px;
 `
 
 const ImplementationName = styled.h5`
