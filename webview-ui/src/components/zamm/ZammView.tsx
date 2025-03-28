@@ -4,12 +4,13 @@ import { vscode } from "../../utils/vscode"
 import { ZammYaml, ZammRequirement, ZammProjectImplementation, ZammRequirementImplementation } from "../../../../src/shared/Zamm"
 import RequirementDetailView from "./RequirementDetailView"
 import ProjectOverview from "./ProjectOverview"
+import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 
 interface ZammYamlViewProps {
-	showZammView: boolean
+	onDone?: () => void
 }
 
-const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
+const ZammYamlView = ({ onDone }: ZammYamlViewProps) => {
 	const [yamlData, setYamlData] = useState<ZammYaml | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -35,40 +36,34 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 	}
 
 	useEffect(() => {
-		if (showZammView) {
-			setLoading(true)
-			setError(null)
+		setLoading(true)
+		setError(null)
 
-			// Request the YAML content from the extension
-			vscode.postMessage({ type: "requestZammYaml" })
+		// Request the YAML content from the extension
+		vscode.postMessage({ type: "requestZammYaml" })
 
-			// Set up a listener for the response
-			const handleMessage = (event: MessageEvent) => {
-				const message = event.data
-				if (message.type === "zammYamlContent") {
-					if (message.error) {
-						setError(message.error)
-						setLoading(false)
-					} else if (message.zammYamlContent) {
-						setYamlData(message.zammYamlContent)
-						setLoading(false)
-					} else {
-						setError("Received empty ZAMM YAML content")
-						setLoading(false)
-					}
+		// Set up a listener for the response
+		const handleMessage = (event: MessageEvent) => {
+			const message = event.data
+			if (message.type === "zammYamlContent") {
+				if (message.error) {
+					setError(message.error)
+					setLoading(false)
+				} else if (message.zammYamlContent) {
+					setYamlData(message.zammYamlContent)
+					setLoading(false)
+				} else {
+					setError("Received empty ZAMM YAML content")
+					setLoading(false)
 				}
 			}
-
-			window.addEventListener("message", handleMessage)
-			return () => {
-				window.removeEventListener("message", handleMessage)
-			}
 		}
-	}, [showZammView])
 
-	if (!showZammView) {
-		return null
-	}
+		window.addEventListener("message", handleMessage)
+		return () => {
+			window.removeEventListener("message", handleMessage)
+		}
+	}, [])
 
 	const handleRequirementClick = (requirement: ZammRequirement) => {
 		setSelectedRequirement(requirement)
@@ -80,6 +75,10 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 
 	return (
 		<Container>
+			<Header>
+				<Title>ZAMM Configuration</Title>
+				{onDone && <VSCodeButton onClick={onDone}>Done</VSCodeButton>}
+			</Header>
 			<Content>
 				{loading && <Loading>Loading ZAMM configuration...</Loading>}
 
@@ -109,21 +108,32 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 }
 
 const Container = styled.div`
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 	display: flex;
 	flex-direction: column;
-	background-color: none;
-	border: 1px solid color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 100%, transparent);
-	border-radius: 4px;
-	margin: 0 20px 20px;
 	overflow: hidden;
-	min-height: 400px;
+`
+
+const Header = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 17px 10px 20px;
+`
+
+const Title = styled.h3`
+	color: var(--vscode-foreground);
+	margin: 0;
 `
 
 const Content = styled.div`
-	padding: 15px;
+	flex-grow: 1;
 	overflow-y: auto;
-	max-height: 400px;
-	background: none;
+	padding: 15px;
 	--standard-padding: 12px;
 `
 
