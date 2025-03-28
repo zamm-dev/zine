@@ -126,7 +126,7 @@ const Header = styled.div`
 `
 
 const Title = styled.h3`
-	color: var(--vscode-foreground);
+	color: var(--vscode-descriptionForeground);
 	margin: 0;
 `
 
