@@ -5,9 +5,10 @@ import { InfoBox, SectionHeading, SectionTitle } from "./Components"
 interface ProjectOverviewProps {
 	yamlData: ZammYaml
 	onRequirementClick: (requirement: ZammRequirement) => void
+	getImplementationName: (id: string | undefined) => string
 }
 
-const ProjectOverview = ({ yamlData, onRequirementClick }: ProjectOverviewProps) => {
+const ProjectOverview = ({ yamlData, onRequirementClick, getImplementationName }: ProjectOverviewProps) => {
 	return (
 		<>
 			{yamlData.project && (
@@ -20,8 +21,8 @@ const ProjectOverview = ({ yamlData, onRequirementClick }: ProjectOverviewProps)
 						<ImplementationSubsection>
 							<DetailsTitle>Project Implementations</DetailsTitle>
 							{yamlData.project.implementations.map((impl, i) => (
-								<InfoBox key={i}>
-									<ImplementationName>{impl.name}</ImplementationName>
+								<InfoBox key={impl.id || i}>
+									<ImplementationName>{impl.name || getImplementationName(impl.id)}</ImplementationName>
 									{impl.description && <Description>{impl.description}</Description>}
 								</InfoBox>
 							))}

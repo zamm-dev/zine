@@ -3,13 +3,14 @@ project:
     description: Zen and the Automation of Metaprogramming for the Masses (ZAMM) is a
         project meant to enable a natural-language first approach to building software. It currently exists as a fork of Cline.
     implementations:
-        - name: Zine fork v1.0.2
+        - id: pmg4l5x0
+          name: Zine fork v1.0.2
           description: A fork of Cline that adds ZAMM features in.
 requirements:
     - name: GPLv3
       description: ZAMM uses the GPLv3 license for the modifications it makes to Cline.
       implementations:
-          - name: Zine fork v1.0.2
+          - id: pmg4l5x0
             commit: 237234133b4398ce8834e0cf5206db6021c921cd
             details:
                 - Do not output the license files directly from your memory. Instead, run a command such as `mv <OLD_LICENSE> <NEW_LICENSE>` or `git show <COMMIT_ID>:LICENSE > LICENSE` to produce the license files. This ensures a verbatim copy of the licenses.

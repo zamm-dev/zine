@@ -1,10 +1,11 @@
 export interface ZammProjectImplementation {
+	id?: string
 	name?: string
 	description?: string
 }
 
 export interface ZammRequirementImplementation {
-	name?: string
+	id?: string
 	commit?: string
 	details?: string[]
 }

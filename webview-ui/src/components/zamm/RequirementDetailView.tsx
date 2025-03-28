@@ -6,9 +6,10 @@ interface RequirementDetailViewProps {
 	projectName: string
 	requirement: ZammRequirement
 	onBackClick: () => void
+	getImplementationName: (id: string | undefined) => string
 }
 
-const RequirementDetailView = ({ projectName, requirement, onBackClick }: RequirementDetailViewProps) => {
+const RequirementDetailView = ({ projectName, requirement, onBackClick, getImplementationName }: RequirementDetailViewProps) => {
 	return (
 		<Section>
 			<BackButtonContainer>
@@ -28,8 +29,8 @@ const RequirementDetailView = ({ projectName, requirement, onBackClick }: Requir
 				<ImplementationSubsection>
 					<SectionTitle>Implementations</SectionTitle>
 					{requirement.implementations.map((impl, i) => (
-						<InfoBox key={i}>
-							<ImplementationName>{impl.name}</ImplementationName>
+						<InfoBox key={impl.id || i}>
+							<ImplementationName>{getImplementationName(impl.id)}</ImplementationName>
 							{impl.commit && (
 								<CommitInfo>
 									<CommitLabel>Commit:</CommitLabel>

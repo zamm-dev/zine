@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import styled from "styled-components"
 import { vscode } from "../../utils/vscode"
-import { ZammYaml, ZammRequirement } from "../../../../src/shared/Zamm"
+import { ZammYaml, ZammRequirement, ZammProjectImplementation, ZammRequirementImplementation } from "../../../../src/shared/Zamm"
 import RequirementDetailView from "./RequirementDetailView"
 import ProjectOverview from "./ProjectOverview"
 
@@ -14,6 +14,25 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 	const [selectedRequirement, setSelectedRequirement] = useState<ZammRequirement | null>(null)
+
+	// Create a mapping of implementation IDs to their names
+	const implementationMap = useMemo(() => {
+		if (!yamlData?.project?.implementations) return new Map<string, string>()
+
+		const map = new Map<string, string>()
+		yamlData.project.implementations.forEach((impl) => {
+			if (impl.id && impl.name) {
+				map.set(impl.id, impl.name)
+			}
+		})
+		return map
+	}, [yamlData])
+
+	// Helper function to get implementation name from ID
+	const getImplementationName = (id: string | undefined): string => {
+		if (!id) return "Unknown Implementation"
+		return implementationMap.get(id) || `Implementation ${id.substring(0, 4)}...`
+	}
 
 	useEffect(() => {
 		if (showZammView) {
@@ -71,11 +90,18 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 						projectName={yamlData.project?.name ?? "Project"}
 						requirement={selectedRequirement}
 						onBackClick={handleBackClick}
+						getImplementationName={getImplementationName}
 					/>
 				) : (
 					!loading &&
 					!error &&
-					yamlData && <ProjectOverview yamlData={yamlData} onRequirementClick={handleRequirementClick} />
+					yamlData && (
+						<ProjectOverview
+							yamlData={yamlData}
+							onRequirementClick={handleRequirementClick}
+							getImplementationName={getImplementationName}
+						/>
+					)
 				)}
 			</Content>
 		</Container>
