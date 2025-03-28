@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import styled from "styled-components"
 import { vscode } from "../../utils/vscode"
-import { ZammYaml } from "../../../../src/shared/ExtensionMessage"
+import { ZammYaml } from "../../../../src/shared/Zamm"
 
 interface ZammYamlViewProps {
 	showZammView: boolean

@@ -1,6 +1,6 @@
 import { VSCodeButton, VSCodeLink } from "@vscode/webview-ui-toolkit/react"
 import ZammYamlLink from "../zamm/ZammYamlLink"
-import ZammYamlView from "../zamm/ZammYamlView"
+import ZammYamlView from "../zamm/ZammView"
 import debounce from "debounce"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useDeepCompareEffect, useEvent, useMount } from "react-use"
