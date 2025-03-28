@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { ZammRequirement } from "../../../../src/shared/Zamm"
-import { InfoBox, SectionHeading, SectionTitle } from "./Components"
+import { InfoBox, InfoBoxTitle, SectionDescription, SectionHeading, SectionTitle } from "./Components"
 
 interface RequirementDetailViewProps {
 	projectName: string
@@ -22,7 +22,7 @@ const RequirementDetailView = ({ projectName, requirement, onBackClick, getImple
 			<RequirementHeader>
 				<SectionTitle>Requirement Details</SectionTitle>
 				<SectionHeading>{requirement.name}</SectionHeading>
-				<Description>{requirement.description}</Description>
+				<SectionDescription>{requirement.description}</SectionDescription>
 			</RequirementHeader>
 
 			{requirement.implementations && requirement.implementations.length > 0 && (
@@ -30,7 +30,7 @@ const RequirementDetailView = ({ projectName, requirement, onBackClick, getImple
 					<SectionTitle>Implementations</SectionTitle>
 					{requirement.implementations.map((impl, i) => (
 						<InfoBox key={impl.id || i}>
-							<ImplementationName>{getImplementationName(impl.id)}</ImplementationName>
+							<InfoBoxTitle>{getImplementationName(impl.id)}</InfoBoxTitle>
 							{impl.commit && (
 								<CommitInfo>
 									<CommitLabel>Commit:</CommitLabel>
@@ -76,12 +76,6 @@ const RequirementHeader = styled.div`
 	margin-bottom: 15px;
 `
 
-const Description = styled.p`
-	margin: 0 0 10px 0;
-	color: var(--vscode-descriptionForeground);
-	line-height: 1.5;
-`
-
 const CommitInfo = styled.div`
 	display: flex;
 	align-items: center;
@@ -123,16 +117,9 @@ const DetailsList = styled.ul`
 
 const DetailItem = styled.li`
 	margin-bottom: 5px;
-	color: var(--vscode-descriptionForeground);
+	color: var(--vscode-foreground);
 	font-size: 12px;
 	line-height: 1.4;
-`
-
-const ImplementationName = styled.h5`
-	margin: 0 0 5px 0;
-	font-size: 13px;
-	color: var(--vscode-descriptionForeground);
-	font-weight: 500;
 `
 
 export default RequirementDetailView
