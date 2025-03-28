@@ -62,6 +62,18 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 								<SectionTitle>Project Details</SectionTitle>
 								<ProjectName>{yamlData.project.name}</ProjectName>
 								<Description>{yamlData.project.description}</Description>
+
+								{yamlData.project.implementations && yamlData.project.implementations.length > 0 && (
+									<ImplementationSubsection>
+										<DetailsTitle>Project Implementations:</DetailsTitle>
+										{yamlData.project.implementations.map((impl, i) => (
+											<Implementation key={i}>
+												<ImplementationName>{impl.name}</ImplementationName>
+												{impl.description && <Description>{impl.description}</Description>}
+											</Implementation>
+										))}
+									</ImplementationSubsection>
+								)}
 							</Section>
 						)}
 
@@ -73,22 +85,28 @@ const ZammYamlView = ({ showZammView }: ZammYamlViewProps) => {
 										<RequirementName>{req.name}</RequirementName>
 										<Description>{req.description}</Description>
 
-										{req.commit && (
-											<CommitInfo>
-												<CommitLabel>Commit:</CommitLabel>
-												<CommitHash>{req.commit}</CommitHash>
-											</CommitInfo>
-										)}
-
-										{req.implementationDetails && req.implementationDetails.length > 0 && (
-											<ImplementationDetails>
-												<DetailsTitle>Implementation Details:</DetailsTitle>
-												<DetailsList>
-													{req.implementationDetails.map((detail, i) => (
-														<DetailItem key={i}>{detail}</DetailItem>
-													))}
-												</DetailsList>
-											</ImplementationDetails>
+										{req.implementations && req.implementations.length > 0 && (
+											<ImplementationSubsection>
+												<DetailsTitle>Requirement Implementations:</DetailsTitle>
+												{req.implementations.map((impl, i) => (
+													<Implementation key={i}>
+														<ImplementationName>{impl.name}</ImplementationName>
+														{impl.commit && (
+															<CommitInfo>
+																<CommitLabel>Commit:</CommitLabel>
+																<CommitHash>{impl.commit}</CommitHash>
+															</CommitInfo>
+														)}
+														{impl.details && impl.details.length > 0 && (
+															<DetailsList>
+																{impl.details.map((detail, j) => (
+																	<DetailItem key={j}>{detail}</DetailItem>
+																))}
+															</DetailsList>
+														)}
+													</Implementation>
+												))}
+											</ImplementationSubsection>
 										)}
 									</Requirement>
 								))}
@@ -215,7 +233,7 @@ const CommitHash = styled.code`
 	white-space: nowrap;
 `
 
-const ImplementationDetails = styled.div`
+const ImplementationSubsection = styled.div`
 	margin-top: 10px;
 `
 
@@ -237,6 +255,20 @@ const DetailItem = styled.li`
 	color: var(--vscode-descriptionForeground);
 	font-size: 12px;
 	line-height: 1.4;
+`
+
+const Implementation = styled.div`
+	margin-top: 8px;
+	padding: 8px;
+	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 40%, transparent);
+	border-radius: 3px;
+`
+
+const ImplementationName = styled.h5`
+	margin: 0 0 5px 0;
+	font-size: 13px;
+	color: var(--vscode-descriptionForeground);
+	font-weight: 500;
 `
 
 export default ZammYamlView

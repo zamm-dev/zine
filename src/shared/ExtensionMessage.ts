@@ -9,17 +9,28 @@ import { HistoryItem } from "./HistoryItem"
 import { McpServer, McpMarketplaceCatalog, McpMarketplaceItem, McpDownloadResponse } from "./mcp"
 import { TelemetrySetting } from "./TelemetrySetting"
 
+export interface ZammProjectImplementation {
+	name?: string
+	description?: string
+}
+
+export interface ZammRequirementImplementation {
+	name?: string
+	commit?: string
+	details?: string[]
+}
+
 export interface ZammRequirement {
 	name?: string
 	description?: string
-	commit?: string
-	implementationDetails?: string[]
+	implementations?: ZammRequirementImplementation[]
 }
 
 export interface ZammYaml {
 	project?: {
 		name?: string
 		description?: string
+		implementations?: ZammProjectImplementation[]
 	}
 	requirements?: ZammRequirement[]
 }
