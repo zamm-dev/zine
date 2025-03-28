@@ -135,6 +135,7 @@ const Content = styled.div`
 	overflow-y: auto;
 	max-height: 400px;
 	background: none;
+	--standard-padding: 12px;
 `
 
 const Loading = styled.div`
@@ -180,7 +181,7 @@ const Description = styled.p`
 
 const Requirement = styled.div`
 	margin-bottom: 15px;
-	padding: 12px;
+	padding: var(--standard-padding);
 	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 65%, transparent);
 	border-radius: 4px;
 	position: relative;
@@ -235,6 +236,10 @@ const CommitHash = styled.code`
 
 const ImplementationSubsection = styled.div`
 	margin-top: 10px;
+
+	& p:last-child {
+		margin-bottom: 0;
+	}
 `
 
 const DetailsTitle = styled.h5`
@@ -259,7 +264,7 @@ const DetailItem = styled.li`
 
 const Implementation = styled.div`
 	margin-top: 8px;
-	padding: 8px;
+	padding: var(--standard-padding);
 	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 40%, transparent);
 	border-radius: 3px;
 `
