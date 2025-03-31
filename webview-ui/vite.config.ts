@@ -26,7 +26,8 @@ export default defineConfig({
 	server: {
 		port: 25463,
 		hmr: {
-			host: "localhost",
+			// https://github.com/vitejs/vite/issues/4259#issuecomment-882180781
+			port: 3000,
 			protocol: "ws",
 		},
 		cors: {
